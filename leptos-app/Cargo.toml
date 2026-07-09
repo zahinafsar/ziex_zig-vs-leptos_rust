@@ -5,7 +5,6 @@ edition = "2021"
 
 [dependencies]
 leptos = { version = "0.8", default-features = false, features = ["ssr"] }
-actix-web = "4"
 
 [profile.release]
 opt-level = 3

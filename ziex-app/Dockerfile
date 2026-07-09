@@ -23,7 +23,4 @@ COPY . .
 
 RUN zig build --release=fast
 
-ENV PORT=3000
-EXPOSE 3000
-
-CMD ["zig", "build", "serve", "--release=fast"]
+CMD ["/app/zig-out/bin/ziex_app"]

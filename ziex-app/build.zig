@@ -18,5 +18,7 @@ pub fn build(b: *std.Build) !void {
 
     // --- Ziex setup: wires dependencies and adds `zx`/`dev` build steps ---
     var ziex_b = try ziex.init(b, app_exe, .{});
-    ziex_b = ziex_b; // ignore unused
+
+    // --- SsrPage component: transpiled .zx imported into the render benchmark ---
+    ziex_b.addComponentImport("SsrPage", .{ .root_source_file = b.path("app/SsrPage.zx") });
 }

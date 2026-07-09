@@ -1,5 +1,8 @@
-use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 use leptos::prelude::*;
+use std::hint::black_box;
+use std::time::Instant;
+
+const ITERATIONS: usize = 1_000_000;
 
 #[component]
 fn SsrPage() -> impl IntoView {
@@ -16,26 +19,26 @@ fn SsrPage() -> impl IntoView {
     }
 }
 
-#[get("/")]
-async fn handler() -> impl Responder {
+fn render_once() -> usize {
     let owner = Owner::new();
-    let body = owner.with(|| SsrPage().to_html());
-
-    HttpResponse::Ok()
-        .content_type("text/html; charset=utf-8")
-        .body(format!(
-            "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Leptos</title></head><body>{body}</body></html>"
-        ))
+    let html = owner.with(|| SsrPage().to_html());
+    html.len()
 }
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
-    let addr = format!("0.0.0.0:{port}");
+fn main() {
+    let start = Instant::now();
+    let mut total_bytes: usize = 0;
+    for _ in 0..ITERATIONS {
+        total_bytes += render_once();
+    }
+    let total_ns = start.elapsed().as_nanos();
+    black_box(total_bytes);
 
-    println!("Leptos SSR listening on {addr}");
-    HttpServer::new(|| App::new().service(handler))
-        .bind(&addr)?
-        .run()
-        .await
+    let ns_per_op = total_ns as f64 / ITERATIONS as f64;
+    let bytes_per_op = total_bytes / ITERATIONS;
+
+    println!(
+        "{{\"framework\":\"leptos\",\"iterations\":{},\"ns_per_op\":{:.2},\"bytes_per_op\":{}}}",
+        ITERATIONS, ns_per_op, bytes_per_op
+    );
 }

@@ -1,15 +1,13 @@
 pub fn Layout(ctx: zx.LayoutContext, children: zx.Component) zx.Component {
     return (
-        <html @allocator={ctx.arena} lang="en-US">
+        <html @allocator={ctx.arena} lang="en">
             <head>
-                <meta charset="UTF-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <meta charset="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <title>Ziex</title>
-                <link rel="stylesheet" href="/assets/style.css" />
             </head>
 
             <body>
-                <h1>Ziex</h1>
                 {children}
             </body>
         </html>

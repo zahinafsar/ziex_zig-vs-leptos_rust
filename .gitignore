@@ -1,0 +1,11 @@
+# Zig
+.zig-cache/
+zig-out/
+dist/
+bundle/
+
+# Rust
+target/
+
+# Node
+node_modules/

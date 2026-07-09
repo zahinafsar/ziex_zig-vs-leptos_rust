@@ -1,0 +1,22 @@
+services:
+  ziex:
+    build:
+      context: ./ziex-app
+    image: ssr-bench-ziex
+    ports:
+      - "3001:3000"
+    networks:
+      - bench
+
+  leptos:
+    build:
+      context: ./leptos-app
+    image: ssr-bench-leptos
+    ports:
+      - "3002:3000"
+    networks:
+      - bench
+
+networks:
+  bench:
+    driver: bridge

@@ -1,0 +1,10 @@
+pub fn Page(ctx: zx.PageContext) !zx.Component {
+    return (
+        <main @allocator={ctx.arena}>
+            <h1>Hello, Ziex!</h1>
+            <p>Minimal server-side rendered page.</p>
+        </main>
+    );
+}
+
+const zx = @import("zx");

@@ -12,7 +12,12 @@ mkdir -p "$RESULTS_DIR"
 echo "==> Building and starting containers"
 docker compose up -d --build
 
-NET="$(docker network ls --format '{{.Name}}' | grep -E 'ssr-bench.*bench' | head -1)"
+ZIEX_CID="$(docker compose ps -q ziex)"
+if [ -z "$ZIEX_CID" ]; then
+  echo "Could not find ziex container" >&2
+  exit 1
+fi
+NET="$(docker inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{$k}}{{end}}' "$ZIEX_CID")"
 if [ -z "$NET" ]; then
   echo "Could not find compose network" >&2
   exit 1

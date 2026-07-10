@@ -1,29 +1,22 @@
-FROM debian:bookworm-slim AS base
+FROM debian:bookworm-slim AS build
 
-ARG ZIG_VERSION=0.16.0
+ARG ZIG_VER=0.16.0
+RUN apt-get update && apt-get install -y curl xz-utils
+RUN curl -fL https://ziglang.org/download/${ZIG_VER}/zig-$(uname -m)-linux-${ZIG_VER}.tar.xz -o zig.tar.xz && \
+tar xf zig.tar.xz && \
+mv zig-$(uname -m)-linux-${ZIG_VER}/ /opt/zig
+ENV PATH="/opt/zig:$PATH"
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl xz-utils git ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN arch="$(uname -m)"; \
-    case "$arch" in \
-      aarch64|arm64) zarch=aarch64 ;; \
-      x86_64|amd64) zarch=x86_64 ;; \
-      *) echo "unsupported arch: $arch" >&2; exit 1 ;; \
-    esac; \
-    curl -fsSL "https://ziglang.org/download/${ZIG_VERSION}/zig-${zarch}-linux-${ZIG_VERSION}.tar.xz" -o /tmp/zig.tar.xz; \
-    mkdir -p /opt/zig; \
-    tar -xJf /tmp/zig.tar.xz -C /opt/zig --strip-components=1; \
-    rm /tmp/zig.tar.xz; \
-    ln -s /opt/zig/zig /usr/local/bin/zig
-
-WORKDIR /app
-COPY . .
-
+WORKDIR /build
+COPY build.zig build.zig.zon ./
+RUN zig build --fetch
+COPY app/ ./app/
 RUN zig build --release=fast
 
-ENV PORT=3000
-EXPOSE 3000
+FROM debian:bookworm-slim
+WORKDIR /app
 
-CMD ["zig", "build", "serve", "--release=fast"]
+COPY --from=build /build/zig-out/bin /app
+COPY --from=build /build/zig-out/static /app/static
+
+ENTRYPOINT ["/app/ziex_app"]

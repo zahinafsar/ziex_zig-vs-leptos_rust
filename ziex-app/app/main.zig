@@ -8,7 +8,3 @@ pub fn main(init: zx.Init) !void {
 }
 
 pub const std_options = zx.std_options;
-
-pub const config = .{
-    .csr = false,
-};

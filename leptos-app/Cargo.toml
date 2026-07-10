@@ -4,7 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-leptos = { version = "0.8", default-features = false, features = ["ssr"] }
+leptos = { version = "0.8", features = ["ssr"] }
+leptos_router = { version = "0.8", features = ["ssr"] }
+leptos_actix = "0.8"
 actix-web = "4"
 
 [profile.release]

@@ -14,7 +14,6 @@ RUN touch src/main.rs && cargo build --release
 FROM debian:bookworm-slim
 COPY --from=build /app/target/release/leptos-app /usr/local/bin/leptos-app
 
-ENV PORT=3000
 EXPOSE 3000
 
 CMD ["leptos-app"]
